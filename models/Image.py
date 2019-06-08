@@ -5,7 +5,7 @@ from .Category import Category
 
 
 class Image(models.Model):
-    image_path = models.FilePathField()
+    image_path = models.FilePathField(max_length=4096)
     image_title = models.CharField(max_length=250)
     tags = models.ManyToManyField(Tag)
     categories = models.ManyToManyField(Category)
