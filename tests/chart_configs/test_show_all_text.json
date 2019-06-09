@@ -1,0 +1,259 @@
+{
+  "username": "username",
+  "title_text": {
+    "text": "Top 20 Anime",
+    "size": 70,
+    "height_padding": 30,
+    "width_padding": 150,
+    "show": true,
+    "font": "arial",
+    "alignment": "center"
+  },
+  "tile_name_text": {
+    "size": 24,
+    "height_padding": 5,
+    "width_padding": 5,
+    "show": true,
+    "font": "arial",
+    "alignment": "left"
+  },
+  "tile_name_row_text": {
+    "size": 30,
+    "height_padding": 5,
+    "width_padding": 5,
+    "show": true,
+    "font": "arial",
+    "alignment": "left"
+  },
+  "group_title_text": {
+    "text": [
+      "Top 10",
+      "Second-tier Classics"
+    ],
+    "size": 62,
+    "height_padding": 50,
+    "width_padding": 150,
+    "show": true,
+    "font": "arial",
+    "alignment": "left"
+  },
+  "tile_row_text": {
+    "size": 55,
+    "height_padding": 0,
+    "width_padding": 15,
+    "show": true,
+    "font": "arial",
+    "alignment": "left"
+  },
+  "gap_size": 5,
+  "chart_width_padding": 75,
+  "chart_height_padding": 10,
+  "background_color": "#292929",
+  "group_count": 2,
+  "tile_count": [
+    [
+      5,
+      2
+    ],
+    [
+      10,
+      1
+    ]
+  ],
+  "tile_sizes": [
+    [
+      360,
+      360
+    ],
+    [
+      180,
+      180
+    ]
+  ],
+  "images": [
+    [
+      {
+        "path": "inferno cop.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "mushishi.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "logh.jpg",
+        "crop": [
+          0,
+          0,
+          485,
+          485
+        ]
+      },
+      {
+        "path": "nichijou.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "fma brotherhood.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "ping pong.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "monogatari.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "shirobako.png",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "gurren lagann.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "gankutsuou.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      }
+    ],
+    [
+      {
+        "path": "cowboy bebop.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "evangelion.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "fma 2003.png",
+        "crop": [
+          0,
+          0,
+          452,
+          452
+        ]
+      },
+      {
+        "path": "flcl.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "k-on.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "liz to aoi tori.png",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "houseki no kuni.jpg",
+        "crop": [
+          0,
+          0,
+          586,
+          586
+        ]
+      },
+      {
+        "path": "made in abyss.png",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      },
+      {
+        "path": "steins gate.jpg",
+        "crop": [
+          0,
+          0,
+          595,
+          595
+        ]
+      },
+      {
+        "path": "madoka magica.jpg",
+        "crop": [
+          0,
+          0,
+          600,
+          600
+        ]
+      }
+    ]
+  ]
+}
