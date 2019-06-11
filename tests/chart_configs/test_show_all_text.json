@@ -20,7 +20,7 @@
   "tile_name_row_text": {
     "size": 30,
     "height_padding": 5,
-    "width_padding": 5,
+    "width_padding": 0,
     "show": true,
     "font": "arial",
     "alignment": "left"
@@ -46,7 +46,7 @@
     "alignment": "left"
   },
   "gap_size": 5,
-  "chart_width_padding": 75,
+  "chart_width_padding": 50,
   "chart_height_padding": 10,
   "background_color": "#292929",
   "group_count": 2,

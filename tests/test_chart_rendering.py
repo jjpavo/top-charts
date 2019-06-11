@@ -42,7 +42,7 @@ class TestAllTextRender(TestCase):
         chart_renderer.grid_height = 925
         chart_width, chart_height = chart_renderer._get_chart_dimensions()
 
-        self.assertEqual(chart_width, 2288)
+        self.assertEqual(chart_width, 2253)
         self.assertEqual(chart_height, 1389)
 
     def test_get_offsets(self):
