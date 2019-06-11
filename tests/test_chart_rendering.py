@@ -46,8 +46,15 @@ class TestAllTextRender(TestCase):
         self.assertEqual(chart_height, 1389)
 
     def test_get_offsets(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        tile_y_offset, title_x_offset, tile_name_y_offset, \
+            tile_name_row_x_offset, tile_name_x_offset = \
+            chart_renderer._get_offsets()
+        self.assertEqual(tile_y_offset, 0)
+        self.assertEqual(title_x_offset, 165)
+        self.assertEqual(tile_name_y_offset, 0)
+        self.assertEqual(tile_name_row_x_offset, 1970)
+        self.assertEqual(tile_name_x_offset, 2005)
 
     def test_paste_tile_first_row(self):
         # TODO

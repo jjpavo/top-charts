@@ -109,8 +109,36 @@ class RenderChart():
         return grid_width, grid_height
 
     def _get_offsets(self):
-        # TODO
-        pass
+        # The Y offset of the next tile to draw.
+        tile_y_offset = 0
+
+        # The X offset of the chart and group titles.
+        title_x_offset = 0
+
+        # The Y offset of the next tile name to draw.
+        tile_name_y_offset = 0
+
+        # The X offset of the tile names.
+        tile_name_x_offset = self.grid_width + (2 * self.chart_cfg['chart_width_padding']) + \
+            self.chart_cfg['tile_name_text']['width_padding']
+
+        # The X offset of the tile name row numbers.
+        tile_name_row_x_offset = self.grid_width + (2 * self.chart_cfg['chart_width_padding']) + \
+            self.chart_cfg['tile_name_row_text']['width_padding']
+
+        if self.chart_cfg['title_text']['show']:
+            title_x_offset = self.chart_cfg['title_text']['width_padding']
+
+        if self.chart_cfg['tile_name_row_text']['show']:
+            tile_name_x_offset += self.chart_cfg['tile_name_row_text']['size'] + \
+                (2 * self.chart_cfg['tile_name_row_text']['width_padding'])
+
+        if self.chart_cfg['tile_row_text']['show']:
+            tile_name_x_offset += self.chart_cfg['tile_row_text']['width_padding']
+            tile_name_row_x_offset += self.chart_cfg['tile_row_text']['width_padding']
+            title_x_offset += self.chart_cfg['tile_row_text']['width_padding']
+
+        return tile_y_offset, title_x_offset, tile_name_y_offset, tile_name_row_x_offset, tile_name_x_offset
 
     def _paste_tile(self, img_num, image, x, w, h):
         # TODO
