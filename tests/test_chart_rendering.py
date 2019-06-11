@@ -69,12 +69,29 @@ class TestAllTextRender(TestCase):
         pass
 
     def test_transform_image_custom_crop(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        image = Image.open((path.join(settings.TEST_DIR, "images",
+                                      self.chart_cfg['images'][0][0]['path'])))
+        tile_width = self.chart_cfg['tile_sizes'][0][0]
+        tile_height = self.chart_cfg['tile_sizes'][0][1]
+        crop_coor = self.chart_cfg['images'][0][0]['crop']
+        cropped = chart_renderer._transform_image(image, tile_width, tile_height, crop_coor)
+        truth = Image.open(path.join(settings.TEST_DIR,
+                                     "charts/test_transform_image_custom_crop.png"))
+        diff = ssim(cropped, truth)
+        self.assertGreaterEqual(diff, 0.97)
 
     def test_transform_image_default_crop(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        image = Image.open((path.join(settings.TEST_DIR, "images",
+                                      self.chart_cfg['images'][0][0]['path'])))
+        tile_width = self.chart_cfg['tile_sizes'][0][0]
+        tile_height = self.chart_cfg['tile_sizes'][0][1]
+        cropped = chart_renderer._transform_image(image, tile_width, tile_height)
+        truth = Image.open(path.join(settings.TEST_DIR,
+                                     "charts/test_transform_image_default_crop.png"))
+        diff = ssim(cropped, truth)
+        self.assertGreaterEqual(diff, 0.97)
 
     def test_render(self):
         # TODO

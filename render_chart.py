@@ -35,9 +35,9 @@ class RenderChart():
         self.chart_cfg = chart_cfg
         self.grid_width, self.grid_height = self._get_grid_dimensions()
         self.chart_width, self.chart_height = self._get_chart_dimensions()
-        # self.chart = Image.new("RGB", (self.chart_width, self.chart_height), color=self.chart_cfg['background_color'])
-        # self.tile_y_offset, self.title_x_offset, self.tile_name_y_offset, self.tile_name_row_x_offset, \
-        #     self.tile_name_x_offset = self._get_offsets()
+        self.chart = Image.new("RGB", (self.chart_width, self.chart_height), color=self.chart_cfg['background_color'])
+        self.tile_y_offset, self.title_x_offset, self.tile_name_y_offset, self.tile_name_row_x_offset, \
+            self.tile_name_x_offset = self._get_offsets()
 
     def render_chart(self):
         """Renders a chart made of a grid of tiles."""
@@ -149,5 +149,42 @@ class RenderChart():
         pass
 
     def _transform_image(self, image, tile_width, tile_height, crop_coor=None):
-        # TODO
-        pass
+        # Ensures that the image fits within the tile. Ideally the image will already be cropped to do so.
+        # Resizes the image to fill the tile and then crops to cut off overfill.
+
+        width, height = image.size
+
+        # Center Cropping by default.
+        if crop_coor is None:
+            left = (width - tile_width) / 2
+            top = (height - tile_height) / 2
+            right = (width + tile_width) / 2
+            bottom = (height + tile_height) / 2
+        else:
+            left = crop_coor[0]
+            top = crop_coor[1]
+            right = crop_coor[2]
+            bottom = crop_coor[3]
+
+        image = image.crop((left, top, right, bottom))
+
+        # Get size of new cropped image.
+        width, height = image.size
+
+        # Take the smaller ratio, as that is the one that should be the bound.
+        # That is, if one side is much smaller than its tile side compared to the other,
+        # we have to scale it up more;
+        # If one side is not much larger than its tile side compared to the other,
+        # we shouldn't scale it down as much.
+        # This ensures that image will fill the tile and there will be no empty space.
+        ratio = None
+        if (width / tile_width) <= (height / tile_height):
+            ratio = width / tile_width
+        else:
+            ratio = height / tile_height
+
+        width = int(width / ratio)
+        height = int(height / ratio)
+        image = image.resize((width, height), Image.ANTIALIAS)
+
+        return image
