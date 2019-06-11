@@ -68,6 +68,7 @@ class TestAllTextRender(TestCase):
         # TODO
         pass
 
+    # TODO Test for non-square images.
     def test_transform_image_custom_crop(self):
         chart_renderer = RenderChart(self.chart_cfg)
         image = Image.open((path.join(settings.TEST_DIR, "images",
