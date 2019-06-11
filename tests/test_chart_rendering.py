@@ -57,12 +57,24 @@ class TestAllTextRender(TestCase):
         self.assertEqual(tile_name_x_offset, 2005)
 
     def test_paste_tile_first_row(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        image = self.chart_cfg['images'][0][0]
+        tile_width = self.chart_cfg['tile_sizes'][0][0]
+        tile_height = self.chart_cfg['tile_sizes'][0][1]
+        chart_renderer._paste_tile(1, image, 10, tile_width, tile_height)
+        truth = Image.open(path.join(settings.TEST_DIR, "charts/test_all_text_tile_first_row.png"))
+        diff = ssim(chart_renderer.chart, truth)
+        self.assertGreaterEqual(diff, 0.97)
 
     def test_paste_tile_second_row(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        image = self.chart_cfg['images'][0][0]
+        tile_width = self.chart_cfg['tile_sizes'][0][0]
+        tile_height = self.chart_cfg['tile_sizes'][0][1]
+        chart_renderer._paste_tile(11, image, 10, tile_width, tile_height)
+        truth = Image.open(path.join(settings.TEST_DIR, "charts/test_all_text_tile_second_row.png"))
+        diff = ssim(chart_renderer.chart, truth)
+        self.assertGreaterEqual(diff, 0.97)
 
     def test_draw_text(self):
         # TODO

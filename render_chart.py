@@ -141,8 +141,20 @@ class RenderChart():
         return tile_y_offset, title_x_offset, tile_name_y_offset, tile_name_row_x_offset, tile_name_x_offset
 
     def _paste_tile(self, img_num, image, x, w, h):
-        # TODO
-        pass
+        # Pastes tile in the appropriate location.
+
+        col_num = img_num % x
+        row_num = floor(img_num / x)
+
+        # + 1 for the gap size because we want the gaps on each side.
+        # If there are 5 tiles, there are 4 spaces in between and 2 on the outer
+        # edges.
+        x_pos = (col_num * w) + (self.chart_cfg['gap_size'] * (col_num + 1)) + self.chart_cfg['chart_width_padding']
+        y_pos = (row_num * h) + (self.chart_cfg['gap_size'] * (row_num + 1)) + self.tile_y_offset
+
+        tile = self._transform_image(Image.open(join(settings.IMAGE_DIR, image['path'])), w, h, image['crop'])
+
+        self.chart.paste(tile, (x_pos, y_pos))
 
     def _draw_text(self, text, text_cfg, y_offset, x_offset):
         # TODO
