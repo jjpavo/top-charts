@@ -157,8 +157,19 @@ class RenderChart():
         self.chart.paste(tile, (x_pos, y_pos))
 
     def _draw_text(self, text, text_cfg, y_offset, x_offset):
-        # TODO
-        pass
+        # Draws text in the appropriate location.
+
+        draw = ImageDraw.Draw(self.chart)
+        font = ImageFont.truetype(text_cfg['font'], text_cfg['size'])
+
+        # ENHANCEMENT Alignment of text. Right now it's only aligned left.
+        draw.text((x_offset, y_offset + text_cfg['height_padding']), text, font=font)
+
+        # Increase the y_offset for the next line of text.
+        # FIXME ?Not optimal to do here? Not sure. Seems sloppy.
+        y_offset += text_cfg['size'] + (2 * text_cfg['height_padding'])
+
+        return y_offset
 
     def _transform_image(self, image, tile_width, tile_height, crop_coor=None):
         # Ensures that the image fits within the tile. Ideally the image will already be cropped to do so.

@@ -77,8 +77,12 @@ class TestAllTextRender(TestCase):
         self.assertGreaterEqual(diff, 0.97)
 
     def test_draw_text(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        text = self.chart_cfg['title_text']['text']
+        chart_renderer._draw_text(text, self.chart_cfg['title_text'], 100, 50)
+        truth = Image.open(path.join(settings.TEST_DIR, "charts/test_all_text_draw_text.png"))
+        diff = ssim(chart_renderer.chart, truth)
+        self.assertGreaterEqual(diff, 0.97)
 
     # TODO Test for non-square images.
     def test_transform_image_custom_crop(self):
