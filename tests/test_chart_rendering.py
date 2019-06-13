@@ -111,5 +111,9 @@ class TestAllTextRender(TestCase):
         self.assertGreaterEqual(diff, 0.97)
 
     def test_render(self):
-        # TODO
-        pass
+        chart_renderer = RenderChart(self.chart_cfg)
+        ret = chart_renderer.render_chart()
+        # Compare to ground truth.
+        truth = Image.open(path.join(settings.TEST_DIR, "charts/test_show_all_text.png"))
+        diff = ssim(ret, truth)
+        self.assertGreaterEqual(diff, 0.97)

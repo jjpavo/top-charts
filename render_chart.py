@@ -41,7 +41,61 @@ class RenderChart():
 
     def render_chart(self):
         """Renders a chart made of a grid of tiles."""
-        # TODO
+
+        row_count = 1
+
+        if self.chart_cfg['title_text']['show']:
+            self.tile_y_offset = self._draw_text(self.chart_cfg['title_text']['text'],
+                                                 self.chart_cfg['title_text'],
+                                                 self.tile_y_offset,
+                                                 self.title_x_offset
+                                                 ) - self.chart_cfg['title_text']['height_padding']
+            # By default, have the tile names start past the title.
+            # ENHANCEMENT May give the option to change in the future.
+            self.tile_name_y_offset = self.tile_y_offset
+
+        for group, ((x, y), (w, h)) in enumerate(zip(self.chart_cfg['tile_count'], self.chart_cfg['tile_sizes'])):
+            # Draw the header for the group.
+            if self.chart_cfg['group_title_text']['show']:
+                self.tile_y_offset = self._draw_text(self.chart_cfg['group_title_text']['text'][group],
+                                                     self.chart_cfg['group_title_text'], self.tile_y_offset,
+                                                     self.title_x_offset)
+
+            # Put space between the last block of names and the next one for
+            # purposes of readability.
+            self.tile_name_y_offset += self.chart_cfg['tile_name_text']['size'] + \
+                (2 * self.chart_cfg['tile_name_text']['height_padding'])
+
+            for img_num, image in enumerate(self.chart_cfg['images'][group]):
+                # Paste the image onto the tile.
+                self._paste_tile(img_num, image, x, w, h)
+
+                # If we're at the beginning of a row...
+                if img_num % w == 0:
+                    # Draw image name row number.
+                    if self.chart_cfg['tile_name_row_text']['show']:
+                        self._draw_text(str(row_count),
+                                        self.chart_cfg['tile_name_row_text'],
+                                        self.tile_name_y_offset,
+                                        self.tile_name_row_x_offset)
+
+                    # Draw the tile row number.
+                    if self.chart_cfg['tile_row_text']['show']:
+                        self._draw_text(str(row_count), self.chart_cfg['tile_row_text'], self.tile_y_offset,
+                                        self.grid_width)
+                    row_count += 1
+
+                # Draw the image's name.        # TODO
+                if self.chart_cfg['tile_name_text']['show']:
+                    name = ImageModel.objects.get(image_path=image['path']).image_title
+                    self.tile_name_y_offset = self._draw_text(name, self.chart_cfg['tile_name_text'],
+                                                              self.tile_name_y_offset, self.tile_name_x_offset)
+
+            # Once at the end of the group, increase the Y offset to be at the
+            # edge of the end of the last group.
+            self.tile_y_offset += y * (h + self.chart_cfg['gap_size'])
+
+        return self.chart
 
     def _get_chart_dimensions(self):
         # Start with the dimensions of the grid with padding.
