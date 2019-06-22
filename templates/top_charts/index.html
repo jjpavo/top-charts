@@ -1,0 +1,48 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Top Charts</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {% load static %}
+
+  <link rel="stylesheet" type="text/css" href="{% static 'top_charts/styles.min.css' %}">
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+  <div id="cropper-modal" class="cropper modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div>
+        <img id="image" src="">
+      </div>
+      <button id="crop">Crop</button>
+    </div>
+  </div>
+  <aside id="configuration-bar">
+    <div id="images-selection">
+      <h1 id="images-title">Select Images</h1>
+      <input id="image-upload" type="file" accept="image/webp, image/jpeg, image/png">
+    </div>
+    <button id="open-cropper">Edit Image</button>
+    <img id="cropped-image" src="">
+    <div id="options-selection">
+      <h1 id="options-title">Options</h1>
+      <form id="options-form">
+        {% comment %} TODO {% endcomment %}
+        <button id="render" value="Render Chart">Render Chart</button>
+      </form>
+    </div>
+  </aside>
+  <main>
+
+  </main>
+  <script src="{% static 'top_charts/scripts.js' %}" type="text/javascript"></script>
+</body>
+
+</html>
