@@ -9,7 +9,8 @@ from top_charts.render_chart import RenderChart
 
 
 def index(request):
-    return HttpResponse('hello world')
+    context = {}
+    return render(request, 'top_charts/index.html', context)
 
 
 def chart(request):
