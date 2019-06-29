@@ -5,6 +5,7 @@ from io import BytesIO
 from os import path, makedirs
 
 from django.conf import settings
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -70,6 +71,21 @@ def image(request):
         # the chart server-side.
         response['path'] = im.image_path
     elif request.method == 'GET':
-        pass
-        # use bytesio then pil image.save(bytesio var, format='JPEG')
+        data = dict(request.GET)
+        tags = data['tags']
+
+        image_objects = ImageModel.objects.filter(tags__tag__in=tags).annotate(
+            num_tags=Count('tags')).filter(num_tags=len(tags))
+
+        images = {}
+        for image in image_objects:
+            with open(path.join(settings.IMAGE_DIR, image.image_path), "rb") as image_file:
+                images[image.image_title] = {
+                    "image": base64.b64encode(image_file.read()).decode('utf-8'),
+                    "id": image.id,
+                    "path": image.image_path
+                }
+
+        response = HttpResponse("OK")
+        response['images'] = images
     return response
