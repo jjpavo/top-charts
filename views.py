@@ -12,6 +12,7 @@ from PIL import Image
 
 from top_charts.render_chart import RenderChart
 from top_charts.models import Image as ImageModel
+from top_charts.models import Tag
 from top_charts.utils import construct_image_path
 
 
@@ -43,9 +44,19 @@ def image(request):
         image_dir = path.dirname(image_path)
         image_filename = path.basename(image_path)
 
-        # Save image object in database.
+        # Create image object in database.
         im = ImageModel(image_path=image_path, image_title=data['title'], creation_date=timezone.now())
         im.save()
+
+        for tag_name in data['tags']:
+            tag = Tag.objects.filter(tag=tag_name)
+            if not tag:
+                tag = Tag(tag=tag_name)
+                tag.save()
+            else:
+                # Get the tag from the QuerySet
+                tag = tag[0]
+            im.tags.add(tag)
 
         # Save image file in the file system.
         makedirs(path.join(settings.IMAGE_DIR, image_dir), exist_ok=True)

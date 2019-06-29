@@ -75,9 +75,12 @@ class TestImage(TestCase):
         db_image = ImageModel.objects.get(pk=id)
         saved_path = db_image.image_path
         saved_title = db_image.image_title
+        saved_tags = db_image.tags.all()
 
         pil_saved_image = Image.open(path.join(settings.IMAGE_DIR, saved_path))
         pil_original_image = Image.open(BytesIO(base64.b64decode(self.img_base64)))
+        correct_tags = [Tag(tag="anime"), Tag(tag="90s"), Tag(tag="classic"), Tag(tag="gainax"), Tag(
+            tag="hideaki anno"), Tag(tag="evangelion"), Tag(tag="neon genesis evangelion"), Tag(tag="shinseiki evangelion")]
 
         diff = ssim(pil_saved_image, pil_original_image)
 
@@ -85,4 +88,5 @@ class TestImage(TestCase):
         self.assertEqual(saved_title, self.data['title'])
         self.assertEqual(response['path'], image_path)
         self.assertEqual(response['path'], saved_path)
+        self.assertEqual(set(correct_tags), set(saved_tags))
         self.assertEqual(diff, 1.0)
