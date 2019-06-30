@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const cropButton = document.getElementById("crop");
 
+  const tagInput = document.getElementById("tags");
+
   const aspect169Button = document.getElementById("16:9");
   const aspect43Button = document.getElementById("4:3");
   const aspect11Button = document.getElementById("1:1");
@@ -88,12 +90,14 @@ document.addEventListener("DOMContentLoaded", function () {
     croppedCanvas = cropper.getCroppedCanvas();
     croppedImage.src = croppedCanvas.toDataURL();
     var cropData = cropper.getData();
+    var tags = tagInput.value.split(",");
     axios({
       method: 'post',
       url: 'image',
       data: {
         image: image.src.replace(/^data:image\/[a-z]+;base64,/, ""),
-        title: imageOptions['image-title']
+        title: imageOptions['image-title'],
+        tags: tags
       }
     }).then(function (response) {
       console.log(response);
