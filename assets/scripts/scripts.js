@@ -68,6 +68,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const cropButton = document.getElementById("crop");
 
+  const aspect169Button = document.getElementById("16:9");
+  const aspect43Button = document.getElementById("4:3");
+  const aspect11Button = document.getElementById("1:1");
+  const aspectFreeButton = document.getElementById("free-aspect-ratio");
+
   document.getElementById('image-upload').addEventListener("change", function () {
     // When an image is opened, read it as a base 64 string and open the cropper.
     readFile(this);
@@ -115,6 +120,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  aspect169Button.onclick = function (event) {
+    if (!cropper) {
+      return;
+    }
+
+    cropper.setAspectRatio(16 / 9);
+  }
+
+  aspect43Button.onclick = function (event) {
+    if (!cropper) {
+      return;
+    }
+
+    cropper.setAspectRatio(4 / 3);
+  }
+
+  aspect11Button.onclick = function (event) {
+    if (!cropper) {
+      return;
+    }
+
+    cropper.setAspectRatio(1);
+  }
+
+  aspectFreeButton.onclick = function (event) {
+    if (!cropper) {
+      return;
+    }
+
+    cropper.setAspectRatio(NaN);
+  }
+
+
   function readFile(input) {
     if (input.files && input.files[0]) {
       var reader = new FileReader();
@@ -132,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function openCropper() {
     cropper = new Cropper(image, {
       dragMode: 'move',
-      initialAspectRatio: 16 / 9,
+      initialAspectRatio: 1,
       autoCropArea: 0.65,
       restore: false,
       guides: true,
