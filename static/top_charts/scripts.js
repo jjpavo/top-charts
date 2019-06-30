@@ -102,17 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
     croppedCanvas = cropper.getCroppedCanvas();
     croppedImage.src = croppedCanvas.toDataURL();
     var cropData = cropper.getData();
-    // crop: [
-    //   cropData.x,
-    //   cropData.y,
-    //   cropData.x + cropData.width,
-    //   cropData.y + cropData.height
-    // ],
     axios({
       method: 'post',
       url: 'image',
       data: {
-        image: image.src,
+        image: image.src.replace(/^data:image\/[a-z]+;base64,/, ""),
         title: imageOptions['image-title']
       }
     }).then(function (response) {
