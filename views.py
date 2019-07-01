@@ -79,12 +79,14 @@ def image(request):
 
         images = {}
         for image in image_objects:
-            with open(path.join(settings.IMAGE_DIR, image.image_path), "rb") as image_file:
-                images[image.image_title] = {
-                    "image": base64.b64encode(image_file.read()).decode('utf-8'),
-                    "id": image.id,
-                    "path": image.image_path
-                }
+            images[image.id] = {
+                "title": image.image_title,
+                # The full path is to load the image client-side and the relative is for when the path is sent to the
+                # server in the chart config it is independent of the server setup, which I believe is the correct
+                # decision.
+                "path": path.join(settings.IMAGE_DIR, image.image_path),
+                "relpath": image.image_path
+            }
 
         response = JsonResponse(images)
     return response
