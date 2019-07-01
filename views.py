@@ -84,7 +84,7 @@ def image(request):
                 # The full path is to load the image client-side and the relative is for when the path is sent to the
                 # server in the chart config it is independent of the server setup, which I believe is the correct
                 # decision.
-                "path": path.join(settings.IMAGE_DIR, image.image_path),
+                "path": path.join(settings.IMAGE_DIR_REL, image.image_path),
                 "relpath": image.image_path
             }
 
