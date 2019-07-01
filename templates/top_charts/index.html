@@ -41,10 +41,16 @@
   </div>
   <aside id="configuration-bar" class="sidebar">
     <div id="images-selection">
-      <h1 id="images-title">Select Images</h1>
+      <h1 id="images-title">Upload Images</h1>
       <input id="image-upload" type="file" accept="image/webp, image/jpeg, image/png">
+      <button id="open-cropper">Edit Image</button>
+      <h1 id="images-title">Search Images</h1>
+      <input id="image-search" name="image-search" type="text">
+      <button id="image-search-button" name="image-search-button" type="text">Search</button>
+      <div id="searched-images" class="image-container grid">
+
+      </div>
     </div>
-    <button id="open-cropper">Edit Image</button>
     <img id="cropped-image" src="">
     <div id="options-selection">
       <h1 id="options-title">Options</h1>

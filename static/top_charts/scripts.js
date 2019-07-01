@@ -94,6 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const aspect11Button = document.getElementById("1:1");
   const aspectFreeButton = document.getElementById("free-aspect-ratio");
 
+  const imageSearchButton = document.getElementById("image-search-button");
+  const imageSearchText = document.getElementById("image-search");
+  const searchedImages = document.getElementById("searched-images");
+
   document.getElementById('image-upload').addEventListener("change", function () {
     // When an image is opened, read it as a base 64 string and open the cropper.
     readFile(this);
@@ -119,7 +123,13 @@ document.addEventListener("DOMContentLoaded", function () {
         tags: tags
       }
     }).then(function (response) {
-      console.log(response);
+      defaultImages[response.headers.id] = {
+        "cropData": cropData,
+        "path": response.headers.path,
+      }
+      croppedImages[response.headers.id] = {
+        "image": croppedImage.src
+      }
     }).catch(function (error) {
       // TODO
       console.log(error);
@@ -175,6 +185,34 @@ document.addEventListener("DOMContentLoaded", function () {
     cropper.setAspectRatio(NaN);
   }
 
+  imageSearchButton.onclick = function (event) {
+    axios({
+      method: 'get',
+      url: 'image',
+      params: {
+        tags: imageSearchText.value
+      }
+    }).then(function (response) {
+      while (searchedImages.firstChild) {
+        searchedImages.removeChild(searchedImages.firstChild);
+      }
+      for (let key in response.data) {
+        if (response.data.hasOwnProperty(key)) {
+          let val = response.data[key];
+          let searchedImage = document.createElement('img');
+          searchedImage.src = val.path;
+          searchedImage.title = val.title;
+          searchedImage.alt = val.title;
+          searchedImage.dataset.id = key;
+          searchedImage.dataset.relpath = val.relpath;
+          searchedImages.appendChild(searchedImage);
+        }
+      };
+    }).catch(function (error) {
+      // TODO
+      console.log(error);
+    });
+  }
 
   function readFile(input) {
     if (input.files && input.files[0]) {
