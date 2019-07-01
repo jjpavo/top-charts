@@ -152,7 +152,7 @@ class TestImage(TestCase):
         }
 
         response = self.client.get(self.url, data, content_type="application/json")
-        response_images = json.loads(response['images'].replace("\'", "\""))
+        response_images = json.loads((response.content).decode('utf-8'))
         image_names = response_images.keys()
 
         for image_name, image_data in response_images.items():

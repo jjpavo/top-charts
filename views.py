@@ -6,7 +6,7 @@ from os import path, makedirs
 
 from django.conf import settings
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from PIL import Image
@@ -86,6 +86,5 @@ def image(request):
                     "path": image.image_path
                 }
 
-        response = HttpResponse("OK")
-        response['images'] = images
+        response = JsonResponse(images)
     return response
