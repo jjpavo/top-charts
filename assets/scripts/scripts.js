@@ -1,3 +1,6 @@
+import * as Cropper from '../cropperjs/dist/cropper.js';
+import axios from '../@bundled-es-modules/axios/axios.js';
+
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 

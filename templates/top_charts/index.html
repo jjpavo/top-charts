@@ -63,7 +63,9 @@
   <main>
 
   </main>
-  <script src="{% static 'top_charts/scripts.js' %}" type="text/javascript"></script>
+  <script src="{% static 'cropperjs/dist/cropper.js' %}" type="module"></script>
+  <script src="{% static '@bundled-es-modules/axios/axios.js' %}" type="module"></script>
+  <script src="{% static 'top_charts/scripts.js' %}" type="module"></script>
 </body>
 
 </html>
