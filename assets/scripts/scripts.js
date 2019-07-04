@@ -1,4 +1,3 @@
-import * as Cropper from '../cropperjs/dist/cropper.js';
 import axios from '../@bundled-es-modules/axios/axios.js';
 
 axios.defaults.xsrfCookieName = 'csrftoken'
@@ -55,6 +54,28 @@ let serialize = function (form) {
 
 };
 
+document.allowDrop = function (ev) {
+  ev.preventDefault();
+}
+
+document.drag = function (ev) {
+  ev.dataTransfer.setData("text", ev.target.src);
+}
+
+document.drop = function (ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+
+  if (ev.target.nodeName == "IMG") {
+    ev.target.src = data;
+  } else {
+    let draggedImage = document.createElement('img');
+    draggedImage.src = data;
+    draggedImage.draggable = false;
+    ev.target.appendChild(draggedImage);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const image = document.getElementById('image');
 
@@ -62,6 +83,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let croppedCanvas;
   croppedImage = document.getElementById("cropped-image");
+  croppedImage.draggable = true;
+  croppedImage.ondragstart = "drag(event)";
 
   const cropperModal = document.getElementById("cropper-modal");
 
@@ -189,6 +212,13 @@ document.addEventListener("DOMContentLoaded", function () {
           searchedImage.alt = val.title;
           searchedImage.dataset.id = key;
           searchedImage.dataset.relpath = val.relpath;
+          searchedImage.draggable = true;
+          searchedImage.ondragstart = function (event) {
+            document.drag(event);
+          }
+          searchedImage.ondblclick = function (event) {
+
+          }
           searchedImages.appendChild(searchedImage);
         }
       };
@@ -227,4 +257,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     cropperModal.style.display = "block";
   }
+
+  const containers = document.querySelectorAll('.draggable-container');
+
+  const sortable = new Draggable.Sortable(containers, {
+    draggable: ".draggable",
+    plugins: [Draggable.Plugins.ResizeMirror]
+  });
 });

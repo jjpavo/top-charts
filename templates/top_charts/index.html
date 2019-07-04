@@ -61,10 +61,47 @@
     </div>
   </aside>
   <main>
-
+    <div id="chart" class="chart">
+      <div id="tiles">
+      {% comment %} Example, WIP {% endcomment %}
+        <div id="tiles-section-1" class="chart-section draggable-container grid">
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="/static/top_charts/uploaded_images/8/1/5/5418026287836551.png">
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+          <div class="tile draggable" ondrop="drop(event)" ondragover="allowDrop(event)">
+          
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
   <script src="{% static 'cropperjs/dist/cropper.js' %}" type="module"></script>
   <script src="{% static '@bundled-es-modules/axios/axios.js' %}" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.8/lib/draggable.bundle.js"></script>
   <script src="{% static 'top_charts/scripts.js' %}" type="module"></script>
 </body>
 
