@@ -23,13 +23,12 @@ def index(request):
 
 
 def chart(request):
-    if request.is_ajax():
-        if request.method == 'POST':
-            chart_renderer = RenderChart(json.loads(request.body))
-            chart = chart_renderer.render_chart()
-            response = HttpResponse(content_type="image/png")
-            chart.save(response, "PNG")
-            return response
+    if request.method == 'POST':
+        chart_renderer = RenderChart(json.loads(request.body))
+        chart = chart_renderer.render_chart()
+        response = HttpResponse(content_type="image/png")
+        chart.save(response, "PNG")
+        return response
 
 
 def image(request):
