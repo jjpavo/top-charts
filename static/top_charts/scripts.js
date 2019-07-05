@@ -3,7 +3,10 @@ import axios from '../@bundled-es-modules/axios/axios.js';
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
-let cropper;
+let cropperWrapper = {
+  cropper: undefined,
+  mode: undefined
+};
 // The current cropped image.
 let croppedImage;
 let defaultImages = {};
@@ -116,80 +119,64 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   cropButton.onclick = function () {
-    let imageOptions = serialize(imageOptionsForm);
-    croppedCanvas = cropper.getCroppedCanvas();
+    croppedCanvas = cropperWrapper.cropper.getCroppedCanvas();
     croppedImage.src = croppedCanvas.toDataURL();
-    var cropData = cropper.getData();
-    var tags = tagInput.value.split(",");
-    axios({
-      method: 'post',
-      url: 'image',
-      data: {
-        image: image.src.replace(/^data:image\/[a-z]+;base64,/, ""),
-        title: imageOptions['image-title'],
-        tags: tags
-      }
-    }).then(function (response) {
-      defaultImages[response.headers.id] = {
-        "cropData": cropData,
-        "path": response.headers.path,
-      }
-      croppedImages[response.headers.id] = {
-        "image": croppedImage.src
-      }
-    }).catch(function (error) {
-      // TODO
-      console.log(error);
-    });
+
+    if (cropperWrapper.mode === "uploaded") {
+      let cropData = cropperWrapper.cropper.getData();
+      let tags = tagInput.value.split(",");
+      let imageOptions = serialize(imageOptionsForm);
+      uploadImage(imageOptions, cropData, tags);
+    }
 
     cropperModal.style.display = "none";
-    cropper.destroy();
+    cropperWrapper.cropper.destroy();
   }
 
   // Button to close the cropper.
   closeCropper.onclick = function () {
     cropperModal.style.display = "none";
-    cropper.destroy();
+    cropperWrapper.cropper.destroy();
   }
 
   // Close the cropper when the user clicks outside it.
   window.onclick = function (event) {
     if (event.target == cropperModal) {
       cropperModal.style.display = "none";
-      cropper.destroy();
+      cropperWrapper.cropper.destroy();
     }
   }
 
   aspect169Button.onclick = function (event) {
-    if (!cropper) {
+    if (!cropperWrapper.cropper) {
       return;
     }
 
-    cropper.setAspectRatio(16 / 9);
+    cropperWrapper.cropper.setAspectRatio(16 / 9);
   }
 
   aspect43Button.onclick = function (event) {
-    if (!cropper) {
+    if (!cropperWrapper.cropper) {
       return;
     }
 
-    cropper.setAspectRatio(4 / 3);
+    cropperWrapper.cropper.setAspectRatio(4 / 3);
   }
 
   aspect11Button.onclick = function (event) {
-    if (!cropper) {
+    if (!cropperWrapper.cropper) {
       return;
     }
 
-    cropper.setAspectRatio(1);
+    cropperWrapper.cropper.setAspectRatio(1);
   }
 
   aspectFreeButton.onclick = function (event) {
-    if (!cropper) {
+    if (!cropperWrapper.cropper) {
       return;
     }
 
-    cropper.setAspectRatio(NaN);
+    cropperWrapper.cropper.setAspectRatio(NaN);
   }
 
   imageSearchButton.onclick = function (event) {
@@ -217,7 +204,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.drag(event);
           }
           searchedImage.ondblclick = function (event) {
-
+            cropperWrapper.mode = "searched";
+            image.src = searchedImage.src;
+            openCropper();
           }
           searchedImages.appendChild(searchedImage);
         }
@@ -234,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
       reader.readAsDataURL(input.files[0]);
       reader.onload = function (e) {
         image.src = e.target.result;
+        cropperWrapper.mode = "uploaded";
         openCropper();
       }
     } else {
@@ -241,9 +231,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function uploadImage(imageOptions, cropData, tags) {
+    axios({
+      method: 'post',
+      url: 'image',
+      data: {
+        image: image.src.replace(/^data:image\/[a-z]+;base64,/, ""),
+        title: imageOptions['image-title'],
+        tags: tags
+      }
+    }).then(function (response) {
+      defaultImages[response.headers.id] = {
+        "cropData": cropData,
+        "path": response.headers.path,
+      }
+      croppedImages[response.headers.id] = {
+        "image": croppedImage.src
+      }
+    }).catch(function (error) {
+      // TODO
+      console.log(error);
+    });
+  }
+
 
   function openCropper() {
-    cropper = new Cropper(image, {
+    switch (cropperWrapper.mode) {
+      case "uploaded":
+        imageOptionsForm.display = "block";
+        break;
+      case "searched":
+        imageOptionsForm.display = "hidden";
+        break;
+      default:
+        return;
+    }
+
+    cropperWrapper.cropper = new Cropper(image, {
       dragMode: 'move',
       initialAspectRatio: 1,
       autoCropArea: 0.65,
