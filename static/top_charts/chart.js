@@ -83,12 +83,55 @@ const renderButton = document.getElementById("render");
 const openChartButton = document.getElementById("open-chart");
 const openChartLink = document.getElementById("open-chart-link");
 
+const tilesDiv = document.getElementById("tiles");
+
 renderButton.onclick = function () {
   renderChart()
 }
 
 openChartLink.onclick = function () {
   openChartButton.style.display = "none";
+}
+
+function initGroups() {
+  for (let group in chart.tile_count) {
+    const groupWrapper = document.createElement("div");
+    groupWrapper.className = "chart-group"
+    groupWrapper.id = "chart-group-" + group;
+    tilesDiv.appendChild(groupWrapper);
+
+    const header = document.createElement("h2");
+    header.className = "group-title";
+    header.innerText = "Group Title";
+
+    const inputHeader = document.createElement("input");
+    inputHeader.type = "text";
+    inputHeader.className = "group-title-input";
+    inputHeader.style.display = "none";
+
+    editableText(inputHeader, header);
+
+    const tilesWrapper = document.createElement("div");
+    tilesWrapper.className = "tiles-wrapper draggable-container grid";
+
+    groupWrapper.appendChild(header);
+    groupWrapper.appendChild(inputHeader);
+    groupWrapper.appendChild(tilesWrapper);
+
+    for (let i = chart.tile_count[group][1]; i > 0; i--) {
+      for (let j = chart.tile_count[group][0]; j > 0; j--) {
+        const tile = document.createElement("div");
+        tile.className = "tile draggable";
+        tile.ondrop = function (event) { document.drop(event) };
+        tile.ondragover = function (event) { document.allowDrop(event) };
+        tilesWrapper.appendChild(tile);
+      }
+    }
+  }
+}
+
+function initChart() {
+  initGroups();
 }
 
 function renderChart() {
@@ -108,3 +151,5 @@ function renderChart() {
 
   return false;
 }
+
+initChart();
