@@ -1,0 +1,18 @@
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  height: 100%;
+}
+
+main {
+  flex-grow: 1;
+}
+
+.sidebar {
+  flex-basis: 20%;
+  
+  img {
+    width: 90%;
+  } 
+}
