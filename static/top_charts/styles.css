@@ -91,3 +91,6 @@ main {
   color: white; }
   .tile img {
     width: 100%; }
+
+#open-chart {
+  display: none; }
