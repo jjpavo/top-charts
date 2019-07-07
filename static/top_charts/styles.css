@@ -53,12 +53,13 @@
 
 .flex {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-content: center;
   height: 100%; }
 
 main {
-  flex-grow: 1; }
+  flex-grow: 1;
+  overflow-x: auto; }
 
 .sidebar {
   flex-basis: 20%; }
@@ -82,7 +83,7 @@ main {
   grid-template-columns: repeat(5, 50px);
   grid-gap: .5rem;
   align-content: center;
-  width: 300px; }
+  width: 100%; }
 
 .tile {
   width: 50px;

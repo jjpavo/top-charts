@@ -1,12 +1,13 @@
 .flex {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-content: center;
   height: 100%;
 }
 
 main {
   flex-grow: 1;
+  overflow-x: auto;
 }
 
 .sidebar {
