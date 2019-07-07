@@ -76,6 +76,8 @@ const chart = {
   ]
 }
 
+const chartDiv = document.getElementById("chart");
+
 const renderButton = document.getElementById("render");
 
 // Using a button to open the chart manually rather than it just open automatically
@@ -93,23 +95,67 @@ openChartLink.onclick = function () {
   openChartButton.style.display = "none";
 }
 
+function editableText(inputElement, textElement, type) {
+  inputElement.addEventListener("keydown", function (event) {
+    if (event.repeat) { return } //debounce
+    if (event.keyCode === 13) {
+      // Show label with user entry and hide text input box.
+
+      textElement.style.display = "block";
+
+      if (event.target.value === "") {
+        textElement.innerText = "\"empty\"";
+      } else {
+        textElement.innerText = event.target.value;
+      }
+
+      event.target.style.display = "none";
+
+      if (type === "group") {
+        const group = event.target.parentElement.dataset.groupIndex;
+        chart['group_title_text']['text'][Number(group)] = event.target.value;
+      } else if (type === "title") {
+        chart['title_text']['text'] = event.target.value;
+      }
+    }
+  });
+
+  textElement.addEventListener("click", function (event) {
+    // Show label with user entry and hide text input box.
+    inputElement.style.display = "block";
+    inputElement.value = event.target.innerText;
+    event.target.style.display = "none";
+  });
+}
+
+function initTitle() {
+  const header = document.getElementById("chart-title");
+  header.innerText = chart.title_text.text;
+
+  const inputHeader = document.getElementById("title-input");
+
+  editableText(inputHeader, header, "title");
+}
+
 function initGroups() {
   for (let group in chart.tile_count) {
     const groupWrapper = document.createElement("div");
     groupWrapper.className = "chart-group"
     groupWrapper.id = "chart-group-" + group;
+    groupWrapper.dataset.groupIndex = group;
+
     tilesDiv.appendChild(groupWrapper);
 
     const header = document.createElement("h2");
     header.className = "group-title";
-    header.innerText = "Group Title";
+    header.innerText = chart['group_title_text']['text'][Number(group)];
 
     const inputHeader = document.createElement("input");
     inputHeader.type = "text";
     inputHeader.className = "group-title-input";
     inputHeader.style.display = "none";
 
-    editableText(inputHeader, header);
+    editableText(inputHeader, header, "group");
 
     const tilesWrapper = document.createElement("div");
     tilesWrapper.className = "tiles-wrapper draggable-container grid";
@@ -131,6 +177,7 @@ function initGroups() {
 }
 
 function initChart() {
+  initTitle();
   initGroups();
 }
 
