@@ -1,7 +1,12 @@
+import axios from '../@bundled-es-modules/axios/axios.js';
+
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
 
-let cropper;
+let cropperWrapper = {
+  cropper: undefined,
+  mode: undefined
+};
 // The current cropped image.
 let croppedImage;
 let defaultImages = {};
@@ -52,6 +57,28 @@ let serialize = function (form) {
 
 };
 
+document.allowDrop = function (ev) {
+  ev.preventDefault();
+}
+
+document.drag = function (ev) {
+  ev.dataTransfer.setData("text", ev.target.src);
+}
+
+document.drop = function (ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+
+  if (ev.target.nodeName == "IMG") {
+    ev.target.src = data;
+  } else {
+    let draggedImage = document.createElement('img');
+    draggedImage.src = data;
+    draggedImage.draggable = false;
+    ev.target.appendChild(draggedImage);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const image = document.getElementById('image');
 
@@ -59,6 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let croppedCanvas;
   croppedImage = document.getElementById("cropped-image");
+  croppedImage.draggable = true;
+  croppedImage.ondragstart = "drag(event)";
 
   const cropperModal = document.getElementById("cropper-modal");
 
@@ -67,6 +96,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeCropper = document.getElementsByClassName("close")[0];
 
   const cropButton = document.getElementById("crop");
+
+  const tagInput = document.getElementById("tags");
+
+  const aspect169Button = document.getElementById("16:9");
+  const aspect43Button = document.getElementById("4:3");
+  const aspect11Button = document.getElementById("1:1");
+  const aspectFreeButton = document.getElementById("free-aspect-ratio");
+
+  const imageSearchButton = document.getElementById("image-search-button");
+  const imageSearchText = document.getElementById("image-search");
+  const searchedImages = document.getElementById("searched-images");
 
   document.getElementById('image-upload').addEventListener("change", function () {
     // When an image is opened, read it as a base 64 string and open the cropper.
@@ -79,46 +119,102 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   cropButton.onclick = function () {
-    let imageOptions = serialize(imageOptionsForm);
-    croppedCanvas = cropper.getCroppedCanvas();
+    croppedCanvas = cropperWrapper.cropper.getCroppedCanvas();
     croppedImage.src = croppedCanvas.toDataURL();
-    var cropData = cropper.getData();
-    // crop: [
-    //   cropData.x,
-    //   cropData.y,
-    //   cropData.x + cropData.width,
-    //   cropData.y + cropData.height
-    // ],
-    axios({
-      method: 'post',
-      url: 'image',
-      data: {
-        image: image.src,
-        title: imageOptions['image-title']
-      }
-    }).then(function (response) {
-      console.log(response);
-    }).catch(function (error) {
-      // TODO
-      console.log(error);
-    });
+
+    if (cropperWrapper.mode === "uploaded") {
+      let cropData = cropperWrapper.cropper.getData();
+      let tags = tagInput.value.split(",");
+      let imageOptions = serialize(imageOptionsForm);
+      uploadImage(imageOptions, cropData, tags);
+    }
 
     cropperModal.style.display = "none";
-    cropper.destroy();
+    cropperWrapper.cropper.destroy();
   }
 
   // Button to close the cropper.
   closeCropper.onclick = function () {
     cropperModal.style.display = "none";
-    cropper.destroy();
+    cropperWrapper.cropper.destroy();
   }
 
   // Close the cropper when the user clicks outside it.
   window.onclick = function (event) {
     if (event.target == cropperModal) {
       cropperModal.style.display = "none";
-      cropper.destroy();
+      cropperWrapper.cropper.destroy();
     }
+  }
+
+  aspect169Button.onclick = function (event) {
+    if (!cropperWrapper.cropper) {
+      return;
+    }
+
+    cropperWrapper.cropper.setAspectRatio(16 / 9);
+  }
+
+  aspect43Button.onclick = function (event) {
+    if (!cropperWrapper.cropper) {
+      return;
+    }
+
+    cropperWrapper.cropper.setAspectRatio(4 / 3);
+  }
+
+  aspect11Button.onclick = function (event) {
+    if (!cropperWrapper.cropper) {
+      return;
+    }
+
+    cropperWrapper.cropper.setAspectRatio(1);
+  }
+
+  aspectFreeButton.onclick = function (event) {
+    if (!cropperWrapper.cropper) {
+      return;
+    }
+
+    cropperWrapper.cropper.setAspectRatio(NaN);
+  }
+
+  imageSearchButton.onclick = function (event) {
+    axios({
+      method: 'get',
+      url: 'image',
+      params: {
+        tags: imageSearchText.value
+      }
+    }).then(function (response) {
+      while (searchedImages.firstChild) {
+        searchedImages.removeChild(searchedImages.firstChild);
+      }
+      for (let key in response.data) {
+        if (response.data.hasOwnProperty(key)) {
+          let val = response.data[key];
+          let searchedImage = document.createElement('img');
+          searchedImage.src = val.path;
+          searchedImage.title = val.title;
+          searchedImage.alt = val.title;
+          searchedImage.dataset.id = key;
+          searchedImage.dataset.relpath = val.relpath;
+          searchedImage.draggable = true;
+          searchedImage.ondragstart = function (event) {
+            document.drag(event);
+          }
+          searchedImage.ondblclick = function (event) {
+            cropperWrapper.mode = "searched";
+            image.src = searchedImage.src;
+            openCropper();
+          }
+          searchedImages.appendChild(searchedImage);
+        }
+      };
+    }).catch(function (error) {
+      // TODO
+      console.log(error);
+    });
   }
 
   function readFile(input) {
@@ -127,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
       reader.readAsDataURL(input.files[0]);
       reader.onload = function (e) {
         image.src = e.target.result;
+        cropperWrapper.mode = "uploaded";
         openCropper();
       }
     } else {
@@ -134,11 +231,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function uploadImage(imageOptions, cropData, tags) {
+    axios({
+      method: 'post',
+      url: 'image',
+      data: {
+        image: image.src.replace(/^data:image\/[a-z]+;base64,/, ""),
+        title: imageOptions['image-title'],
+        tags: tags
+      }
+    }).then(function (response) {
+      defaultImages[response.headers.id] = {
+        "cropData": cropData,
+        "path": response.headers.path,
+      }
+      croppedImages[response.headers.id] = {
+        "image": croppedImage.src
+      }
+    }).catch(function (error) {
+      // TODO
+      console.log(error);
+    });
+  }
+
 
   function openCropper() {
-    cropper = new Cropper(image, {
+    switch (cropperWrapper.mode) {
+      case "uploaded":
+        imageOptionsForm.display = "block";
+        break;
+      case "searched":
+        imageOptionsForm.display = "hidden";
+        break;
+      default:
+        return;
+    }
+
+    cropperWrapper.cropper = new Cropper(image, {
       dragMode: 'move',
-      initialAspectRatio: 16 / 9,
+      initialAspectRatio: 1,
       autoCropArea: 0.65,
       restore: false,
       guides: true,
@@ -150,4 +281,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     cropperModal.style.display = "block";
   }
+
+  const containers = document.querySelectorAll('.draggable-container');
+
+  const sortable = new Draggable.Sortable(containers, {
+    draggable: ".draggable",
+    plugins: [Draggable.Plugins.ResizeMirror]
+  });
 });

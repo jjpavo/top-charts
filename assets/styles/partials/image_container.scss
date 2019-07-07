@@ -1,0 +1,17 @@
+.image-container {
+  max-height: 75vh;
+  overflow-y: auto;
+
+
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 30%);
+    grid-auto-flow: row;
+    grid-gap: .5rem;
+    
+    img {
+      margin: .5rem;
+      width: 100%;
+    }
+  }
+}
