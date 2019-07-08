@@ -138,6 +138,7 @@ function initTitle() {
 }
 
 function initGroups() {
+  let tileSize;
   for (let group in chart.tile_count) {
     const groupWrapper = document.createElement("div");
     groupWrapper.className = "chart-group"
@@ -164,12 +165,19 @@ function initGroups() {
     groupWrapper.appendChild(inputHeader);
     groupWrapper.appendChild(tilesWrapper);
 
+    tileSize = chart["tile_sizes"][group];
+    tilesWrapper.style.gridTemplateColumns = "repeat(" + chart.tile_count[group][0] + ", " + tileSize[0] + "px";
+
     for (let i = chart.tile_count[group][1]; i > 0; i--) {
       for (let j = chart.tile_count[group][0]; j > 0; j--) {
         const tile = document.createElement("div");
         tile.className = "tile draggable";
+        tile.style.width = tileSize[0] + "px";
+        tile.style.height = tileSize[1] + "px";
+
         tile.ondrop = function (event) { document.drop(event) };
         tile.ondragover = function (event) { document.allowDrop(event) };
+
         tilesWrapper.appendChild(tile);
       }
     }
