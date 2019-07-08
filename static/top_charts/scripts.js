@@ -102,7 +102,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let croppedCanvas;
   croppedImage = document.getElementById("cropped-image");
   croppedImage.draggable = true;
-  croppedImage.ondragstart = "drag(event)";
+  croppedImage.ondragstart = function (event) {
+    document.drag(event);
+  }
 
   const cropperModal = document.getElementById("cropper-modal");
 
@@ -221,6 +223,10 @@ document.addEventListener("DOMContentLoaded", function () {
           searchedImage.ondblclick = function (event) {
             cropperWrapper.mode = "searched";
             image.src = searchedImage.src;
+            croppedImage.title = searchedImage.title;
+            croppedImage.alt = searchedImage.alt;
+            croppedImage.dataset.id = searchedImage.dataset.id;
+            croppedImage.dataset.relpath = searchedImage.dataset.relpath;
             openCropper();
           }
           searchedImages.appendChild(searchedImage);
@@ -256,6 +262,10 @@ document.addEventListener("DOMContentLoaded", function () {
         tags: tags
       }
     }).then(function (response) {
+      croppedImage.dataset.path = response.headers.path;
+      croppedImage.dataset.id = response.headers.id;
+      // TODO Add title.
+
       defaultImages[response.headers.id] = {
         cropData: cropData,
         path: response.headers.path,
