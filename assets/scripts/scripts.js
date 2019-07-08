@@ -62,18 +62,33 @@ document.allowDrop = function (ev) {
 }
 
 document.drag = function (ev) {
-  ev.dataTransfer.setData("text", ev.target.src);
+  ev.dataTransfer.setData("src", ev.target.src);
+  ev.dataTransfer.setData("title", ev.target.alt);
+  ev.dataTransfer.setData("id", ev.target.dataset.id);
+  ev.dataTransfer.setData("relpath", ev.target.dataset.relpath);
 }
 
 document.drop = function (ev) {
   ev.preventDefault();
-  var data = ev.dataTransfer.getData("text");
+  const src = ev.dataTransfer.getData("src");
+  const title = ev.dataTransfer.getData("title");
+  const id = ev.dataTransfer.getData("id");
+  const relpath = ev.dataTransfer.getData("relpath");
 
+  // Whether you're dragging onto an empty div or an image.
   if (ev.target.nodeName == "IMG") {
-    ev.target.src = data;
+    ev.target.src = src;
+    ev.target.title = title;
+    ev.target.alt = title;
+    ev.target.dataset.id = id;
+    ev.target.dataset.relpath = relpath;
   } else {
     let draggedImage = document.createElement('img');
-    draggedImage.src = data;
+    draggedImage.src = src;
+    draggedImage.title = title;
+    draggedImage.alt = title;
+    draggedImage.dataset.id = id;
+    draggedImage.dataset.relpath = relpath;
     draggedImage.draggable = false;
     ev.target.appendChild(draggedImage);
   }
@@ -242,11 +257,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }).then(function (response) {
       defaultImages[response.headers.id] = {
-        "cropData": cropData,
-        "path": response.headers.path,
+        cropData: cropData,
+        path: response.headers.path,
       }
       croppedImages[response.headers.id] = {
-        "image": croppedImage.src
+        image: croppedImage.src,
+        index: undefined,
+        group: undefined
       }
     }).catch(function (error) {
       // TODO
