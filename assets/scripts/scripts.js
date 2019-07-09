@@ -139,11 +139,24 @@ document.addEventListener("DOMContentLoaded", function () {
     croppedCanvas = cropperWrapper.cropper.getCroppedCanvas();
     croppedImage.src = croppedCanvas.toDataURL();
 
+    const cropperData = cropperWrapper.cropper.getData();
+    const cropData = [
+      cropperData.x,
+      cropperData.y,
+      cropperData.x + cropperData.width,
+      cropperData.y + cropperData.height
+    ];
+
     if (cropperWrapper.mode === "uploaded") {
-      let cropData = cropperWrapper.cropper.getData();
-      let tags = tagInput.value.split(",");
-      let imageOptions = serialize(imageOptionsForm);
+      const tags = tagInput.value.split(",");
+      const imageOptions = serialize(imageOptionsForm);
       uploadImage(imageOptions, cropData, tags);
+    } else {
+      defaultImages[croppedImage.dataset.id] = {
+        cropData: cropData,
+        path: croppedImage.dataset.relpath,
+      }
+      console.log(defaultImages);
     }
 
     cropperModal.style.display = "none";
@@ -285,10 +298,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function openCropper() {
     switch (cropperWrapper.mode) {
       case "uploaded":
-        imageOptionsForm.display = "block";
+        imageOptionsForm.style.display = "block";
         break;
       case "searched":
-        imageOptionsForm.display = "hidden";
+        imageOptionsForm.style.display = "none";
         break;
       default:
         return;
@@ -316,3 +329,5 @@ document.addEventListener("DOMContentLoaded", function () {
     plugins: [Draggable.Plugins.ResizeMirror]
   });
 });
+
+export default defaultImages;

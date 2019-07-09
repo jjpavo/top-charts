@@ -1,5 +1,7 @@
 import axios from '../@bundled-es-modules/axios/axios.js';
 
+import defaultImages from './scripts.js';
+
 const chart = {
   username: "username",
   title_text: {
@@ -190,6 +192,7 @@ function initChart() {
 }
 
 function renderChart() {
+  gatherImages();
   axios({
     method: 'post',
     url: 'chart',
@@ -205,6 +208,28 @@ function renderChart() {
   });
 
   return false;
+}
+
+function gatherImages() {
+  const tileGroups = document.getElementsByClassName("tiles-wrapper");
+  let group;
+  let image;
+  // TODO Optimize so we don't need to repush all images into a new list!
+  chart["images"] = [];
+  for (let i = 0, len = tileGroups.length; i < len; i++) {
+    group = tileGroups[i].childNodes;
+    chart["images"].push([]);
+    for (let j = 0, groupLen = group.length; j < groupLen; j++) {
+      image = group[j].firstChild
+      chart["images"][i].push({
+        path: image.dataset.relpath,
+        id: image.dataset.id,
+        // Using alt because title is inconsistent? It's sometimes empty.
+        title: image.dataset.alt,
+        crop: defaultImages[image.dataset.id]["cropData"]
+      });
+    }
+  }
 }
 
 initChart();
