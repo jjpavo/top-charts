@@ -23,6 +23,7 @@ class TestChart(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.url = reverse('chart')
+        cls.chart = path.join(settings.TEST_DIR, "charts/test_show_all_text.png")
         with open(path.join(settings.TEST_DIR, "chart_configs/test_show_all_text.json"), "r") as json_file:
             cls.chart_cfg = json.load(json_file)
             for group in cls.chart_cfg['images']:
@@ -34,11 +35,15 @@ class TestChart(TestCase):
     def setUp(self):
         self.client = Client()
 
-    # FIXME
     def test_render_chart(self):
         response = self.client.post(self.url, self.chart_cfg,
                                     content_type="application/json",
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        returned_chart = Image.open(BytesIO(response.content))
+        saved_chart = Image.open(self.chart)
+        diff = ssim(returned_chart, saved_chart)
+        self.assertEqual(diff, 1.0)
         self.assertEquals(response.status_code, 200)
 
 
