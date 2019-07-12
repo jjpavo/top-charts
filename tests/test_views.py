@@ -47,6 +47,34 @@ class TestChart(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
+class TestConfig(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse('config')
+        cls.chart_name = "test"
+        with open(path.join(settings.TEST_DIR, "chart_configs/test_show_all_text.json"), "r") as json_file:
+            cls.chart_cfg = json.load(json_file)
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_post(self):
+        data = {
+            "chart": self.chart_cfg,
+            "name": self.chart_name
+        }
+        response = self.client.post(self.url, data, content_type="application/json")
+
+        id = response["id"]
+        chart_obj = Chart.objects.get(pk=id)
+        chart_json = chart_obj.chart
+        name = chart_obj.name
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(chart_json, self.chart_cfg)
+        self.assertEquals(name, self.chart_name)
+
+
 class TestImage(TestCase):
     @classmethod
     def setUpTestData(cls):

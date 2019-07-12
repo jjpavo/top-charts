@@ -78,9 +78,13 @@ const chart = {
   ]
 }
 
+// For resaving a chart.
+let chartID;
+
 const chartDiv = document.getElementById("chart");
 
 const renderButton = document.getElementById("render");
+const saveButton = document.getElementById("save");
 
 // Using a button to open the chart manually rather than it just open automatically
 // since most people block popups nowadays.
@@ -91,6 +95,10 @@ const tilesDiv = document.getElementById("tiles");
 
 renderButton.onclick = function () {
   renderChart()
+}
+
+saveButton.onclick = function () {
+  saveChart()
 }
 
 openChartLink.onclick = function () {
@@ -210,6 +218,25 @@ function renderChart() {
   return false;
 }
 
+function saveChart() {
+  // TODO resave chart
+  gatherImages();
+  axios({
+    method: 'post',
+    url: 'config',
+    data: {
+      chart: chart,
+      // TODO WIP
+      name: chart["title_text"]["text"],
+      username: null
+    }
+  }).then(function (response) {
+    chartID = response.headers.id;
+  }).catch(function (error) {
+    // TODO
+    console.log(error);
+  });
+}
 function gatherImages() {
   const tileGroups = document.getElementsByClassName("tiles-wrapper");
   let group;

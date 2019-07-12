@@ -13,7 +13,7 @@ from PIL import Image
 
 from top_charts.render_chart import RenderChart
 from top_charts.models import Image as ImageModel
-from top_charts.models import Tag
+from top_charts.models import Tag, Chart
 from top_charts.utils import construct_image_path
 
 
@@ -24,11 +24,37 @@ def index(request):
 
 def chart(request):
     if request.method == 'POST':
-        chart_renderer = RenderChart(json.loads(request.body))
+        chart_config = json.loads(request.body)
+        chart_name = chart_config["title_text"]["text"]
+        username = None
+
+        chart_renderer = RenderChart(chart_config)
+        # Change this name
         chart = chart_renderer.render_chart()
+        chart_obj = Chart(chart=chart_config, name=chart_name, creation_date=timezone.now(),
+                          modification_date=timezone.now(), user=username)
+        chart_obj.save()
+
         response = HttpResponse(content_type="image/png")
         chart.save(response, "PNG")
         return response
+
+
+def config(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        chart_config = data["chart"]
+        chart_name = data["name"]
+        username = None  # TODO
+        chart_obj = Chart(chart=chart_config, name=chart_name, creation_date=timezone.now(),
+                          modification_date=timezone.now(), user=username)
+        chart_obj.save()
+
+        response = HttpResponse()
+        response["id"] = chart_obj.id
+        return response
+    elif request.method == "GET":
+        data = dict(request.GET)
 
 
 def image(request):
