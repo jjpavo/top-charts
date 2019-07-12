@@ -237,6 +237,17 @@ function saveChart() {
     console.log(error);
   });
 }
+
+function downloadChartConfig() {
+  let chartJSON = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(chart));
+  let downloadNode = document.createElement('a');
+  downloadNode.setAttribute("href", chartJSON);
+  downloadNode.setAttribute("download", chart["title_text"]["text"] + ".json");
+  document.body.appendChild(downloadNode);
+  downloadNode.click();
+  downloadNode.remove();
+}
+
 function gatherImages() {
   const tileGroups = document.getElementsByClassName("tiles-wrapper");
   let group;
