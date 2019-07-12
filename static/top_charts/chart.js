@@ -85,7 +85,6 @@ const chartDiv = document.getElementById("chart");
 
 const renderButton = document.getElementById("render");
 const saveButton = document.getElementById("save");
-const downloadButton = document.getElementById("download-config");
 
 // Using a button to open the chart manually rather than it just open automatically
 // since most people block popups nowadays.
@@ -95,15 +94,11 @@ const openChartLink = document.getElementById("open-chart-link");
 const tilesDiv = document.getElementById("tiles");
 
 renderButton.onclick = function () {
-  renderChart();
+  renderChart()
 }
 
 saveButton.onclick = function () {
-  saveChart();
-}
-
-downloadButton.onclick = function () {
-  downloadChartConfig();
+  saveChart()
 }
 
 openChartLink.onclick = function () {
@@ -242,17 +237,6 @@ function saveChart() {
     console.log(error);
   });
 }
-
-function downloadChartConfig() {
-  let chartJSON = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(chart));
-  let downloadNode = document.createElement('a');
-  downloadNode.setAttribute("href", chartJSON);
-  downloadNode.setAttribute("download", chart["title_text"]["text"] + ".json");
-  document.body.appendChild(downloadNode);
-  downloadNode.click();
-  downloadNode.remove();
-}
-
 function gatherImages() {
   const tileGroups = document.getElementsByClassName("tiles-wrapper");
   let group;
