@@ -9,13 +9,31 @@ let cropperWrapper = {
 };
 // The current cropped image.
 let croppedImage;
-let defaultImages = {};
+export let defaultImages = {};
 let croppedImages = {};
 
 window.addEventListener('beforeunload', function (e) {
   // e.preventDefault();
   // e.returnValue = "";
 });
+
+export function readFile(input, readerFunc, type) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    if (type === "url") {
+      reader.readAsDataURL(input.files[0]);
+    } else if (type === "text") {
+      reader.readAsText(input.files[0])
+    } else {
+      // TODO
+    }
+    reader.onload = function (event) {
+      readerFunc(event);
+    }
+  } else {
+    alert("Sorry - you're browser doesn't support the FileReader API");
+  }
+}
 
 /*!
  * Serialize all form data into an object
@@ -127,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById('image-upload').addEventListener("change", function () {
     // When an image is opened, read it as a base 64 string and open the cropper.
-    readFile(this);
+    readFile(this, readImage, "url");
   });
 
   // Open the cropper when the button is clicked
@@ -251,18 +269,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function readFile(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.readAsDataURL(input.files[0]);
-      reader.onload = function (e) {
-        image.src = e.target.result;
-        cropperWrapper.mode = "uploaded";
-        openCropper();
-      }
-    } else {
-      alert("Sorry - you're browser doesn't support the FileReader API");
-    }
+  function readImage(event) {
+    image.src = event.target.result;
+    cropperWrapper.mode = "uploaded";
+    openCropper();
   }
 
   function uploadImage(imageOptions, cropData, tags) {
@@ -329,5 +339,3 @@ document.addEventListener("DOMContentLoaded", function () {
     plugins: [Draggable.Plugins.ResizeMirror]
   });
 });
-
-export default defaultImages;

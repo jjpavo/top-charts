@@ -1,8 +1,8 @@
 import axios from '../@bundled-es-modules/axios/axios.js';
 
-import defaultImages from './scripts.js';
+import { defaultImages, readFile } from './scripts.js';
 
-const chart = {
+let chart = {
   username: "username",
   title_text: {
     text: "Top 20 Anime",
@@ -85,6 +85,8 @@ const chartDiv = document.getElementById("chart");
 
 const renderButton = document.getElementById("render");
 const saveButton = document.getElementById("save");
+const downloadButton = document.getElementById("download-config");
+const uploadChartConfig = document.getElementById("upload-config");
 
 // Using a button to open the chart manually rather than it just open automatically
 // since most people block popups nowadays.
@@ -94,12 +96,20 @@ const openChartLink = document.getElementById("open-chart-link");
 const tilesDiv = document.getElementById("tiles");
 
 renderButton.onclick = function () {
-  renderChart()
+  renderChart();
 }
 
 saveButton.onclick = function () {
-  saveChart()
+  saveChart();
 }
+
+downloadButton.onclick = function () {
+  downloadChartConfig();
+}
+
+uploadChartConfig.addEventListener("change", function () {
+  readFile(this, readChartConfig, "text");
+});
 
 openChartLink.onclick = function () {
   openChartButton.style.display = "none";
@@ -138,7 +148,7 @@ function editableText(inputElement, textElement, type) {
   });
 }
 
-function initTitle() {
+function loadTitle() {
   const header = document.getElementById("chart-title");
   header.innerText = chart.title_text.text;
 
@@ -147,7 +157,11 @@ function initTitle() {
   editableText(inputHeader, header, "title");
 }
 
-function initGroups() {
+function loadGroups() {
+  while (tilesDiv.firstChild) {
+    tilesDiv.removeChild(tilesDiv.firstChild);
+  }
+
   let tileSize;
   for (let group in chart.tile_count) {
     const groupWrapper = document.createElement("div");
@@ -194,9 +208,10 @@ function initGroups() {
   }
 }
 
-function initChart() {
-  initTitle();
-  initGroups();
+function loadChart() {
+  loadTitle();
+  loadGroups();
+  // TODO Load images, if present in loaded chart.
 }
 
 function renderChart() {
@@ -248,6 +263,12 @@ function downloadChartConfig() {
   downloadNode.remove();
 }
 
+function readChartConfig(event) {
+  chart = JSON.parse(event.target.result);
+  // TODO Smarter way of loading chart, so that it's not always loaded wholly from scratch.
+  loadChart();
+}
+
 function gatherImages() {
   const tileGroups = document.getElementsByClassName("tiles-wrapper");
   let group;
@@ -270,4 +291,4 @@ function gatherImages() {
   }
 }
 
-initChart();
+loadChart();
