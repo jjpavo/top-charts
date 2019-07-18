@@ -179,6 +179,7 @@ function loadGroups() {
     tilesDiv.appendChild(groupWrapper);
 
     const header = document.createElement("h2");
+
     header.className = "group-title";
     header.innerText = chart['group_title_text']['text'][Number(group)];
 
@@ -284,6 +285,43 @@ function readChartConfig(event) {
   chart = JSON.parse(event.target.result);
   // TODO Smarter way of loading chart, so that it's not always loaded wholly from scratch.
   loadChart();
+  loadImages();
+}
+
+function loadImages() {
+  if (typeof chart.images !== 'undefined' && chart.images.length > 0) {
+    for (let group in chart.images) {
+      let groupDiv = document.getElementById("chart-group-" + group);
+      let tilesWrapper = groupDiv.getElementsByClassName("tiles-wrapper")[0];
+      let tileSize = chart.tile_sizes[group];
+      for (let image in chart.images[group]) {
+        axios({
+          method: 'get',
+          url: 'image',
+          params: {
+            path: chart.images[group][image].path,
+            "crop": chart.images[group][image].crop,
+            "tile_size": tileSize
+          }
+        }).then(function (response) {
+          let tile = tilesWrapper.childNodes[image]
+          let tileImage = document.createElement('img');
+          let id = Object.keys(response.data)[0]
+          tileImage.src = "data:image/jpg;base64," + response.data[id].path;
+          tileImage.title = response.data[id].title;
+          tileImage.alt = response.data[id].title;
+          tileImage.dataset.id = id;
+          tileImage.dataset.relpath = response.data[id].relpath;
+          tile.appendChild(tileImage);
+          // console.log(response);
+        }).catch(function (error) {
+          console.log(error);
+          console.log(error.response.data.message);
+        });
+        // return;
+      }
+    }
+  }
 }
 
 function gatherImages() {

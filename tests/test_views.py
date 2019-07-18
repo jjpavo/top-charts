@@ -165,28 +165,59 @@ class TestImage(TestCase):
         self.assertEqual(diff, 1.0)
 
     def test_image_download_by_one_tag(self):
-        tags = ["anime"]
+        data = {
+            "tags": ["anime"]
+        }
         correct_names = set(["flcl", "gurren lagann", "nichijou"])
-        self._test_image_download(tags, correct_names)
+        self._test_image_download(data, correct_names, 200)
 
     def test_image_download_by_multiple_tags(self):
-        tags = ["anime", "gainax"]
+        data = {
+            "tags": ["anime", "gainax"]
+        }
         correct_names = set(["flcl", "gurren lagann"])
-        self._test_image_download(tags, correct_names)
+        self._test_image_download(data, correct_names, 200)
 
     def test_image_download_by_incoherent_tags(self):
-        tags = ["kyoani", "gainax"]
-        correct_names = set()
-        self._test_image_download(tags, correct_names)
-
-    def _test_image_download(self, tags, correct_names):
         data = {
-            "tags": tags
+            "tags": ["kyoani", "gainax"]
         }
+        correct_names = {
+            "message": "Image(s) not found."
+        }
+        self._test_image_download(data, correct_names, 500)
 
+    def test_image_download_by_path(self):
+        data = {
+            "path": [path.join(settings.IMAGE_DIR, "flcl.jpg")],
+            "crop[]": [100, 100, 200, 200],
+            "tile_size[]": [100, 100]
+        }
+        correct_names = set(["flcl"])
+        self._test_image_download(data, correct_names, 200)
+
+    def test_image_download_by_path_fail(self):
+        data = {
+            "path": [],
+            "crop[]": [100, 100, 200, 200],
+            "tile_size[]": [100, 100]
+        }
+        correct_names = {
+            "message": "Image(s) not found."
+        }
+        self._test_image_download(data, correct_names, 500)
+
+    def _test_image_download(self, data, correct_names, expected_status):
         response = self.client.get(self.url, data, content_type="application/json")
         response_images = json.loads((response.content).decode('utf-8'))
-        image_names = set(response_images[k]['title'] for k in response_images)
+        image_names = None
+        if expected_status == 200:
+            image_names = set(response_images[k]['title'] for k in response_images)
+        elif expected_status == 500:
+            image_names = {
+                "message": "Image(s) not found."
+            }
 
         # TODO Possibly not enough?
+        self.assertEqual(response.status_code, expected_status)
         self.assertEqual(correct_names, image_names)

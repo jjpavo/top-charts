@@ -14,7 +14,7 @@ from PIL import Image
 from top_charts.render_chart import RenderChart
 from top_charts.models import Image as ImageModel
 from top_charts.models import Tag, Chart
-from top_charts.utils import construct_image_path
+from top_charts.utils import construct_image_path, crop_image
 
 
 def index(request):
@@ -96,22 +96,78 @@ def image(request):
         # the chart server-side.
         response['path'] = im.image_path
     elif request.method == 'GET':
+        status = 200
+        responseJSON = {}
+
         data = dict(request.GET)
-        tags = data['tags']
 
-        image_objects = ImageModel.objects.filter(tags__tag__in=tags).annotate(
-            num_tags=Count('tags')).filter(num_tags=len(tags))
+        image_objects = _image_query(data)
+        full_path = None
+        if image_objects:
+            for image in image_objects:
+                # If image is model turn to dict so that both can use ["key"]
+                # Also, the paths must be different, since "image_path" from searching via the path name
+                # gives the base64 string.
+                if type(image) is ImageModel:
+                    image = image.__dict__
+                    full_path = path.join(settings.IMAGE_DIR_REL, image["image_path"])
+                    relpath = image["image_path"]
+                else:
+                    full_path = image["image_path"]
+                    relpath = image["relpath"]
+                responseJSON[image["id"]] = {
+                    "title": image["image_title"],
+                    # The full path is to load the image client-side and the relative is for when the path is sent to
+                    # the server in the chart config it is independent of the server setup, which I believe is the
+                    # correct decision.
+                    "path": full_path,
+                    "relpath": relpath
+                }
 
-        images = {}
-        for image in image_objects:
-            images[image.id] = {
-                "title": image.image_title,
-                # The full path is to load the image client-side and the relative is for when the path is sent to the
-                # server in the chart config it is independent of the server setup, which I believe is the correct
-                # decision.
-                "path": path.join(settings.IMAGE_DIR_REL, image.image_path),
-                "relpath": image.image_path
+        else:
+            status = 500
+            responseJSON = {
+                "message": "Image(s) not found."
             }
 
-        response = JsonResponse(images)
+        response = JsonResponse(responseJSON, status=status)
     return response
+
+
+# TODO Find more elegant way of querying images.
+def _image_query(data):
+    image_objects = None
+
+    if "tags" in data:
+        image_objects = ImageModel.objects.filter(tags__tag__in=data['tags']).annotate(
+            num_tags=Count('tags')).filter(num_tags=len(data['tags']))
+    elif "path" in data:
+        # TODO look into cropping images and saving those, instead of cropping on demand every time.
+        PIL_image = Image.open(path.join(settings.IMAGE_DIR, data['path'][0]))
+
+        try:
+            image_object = ImageModel.objects.filter(image_path=data['path'][0])[0]
+        except IndexError:
+            return None
+
+        if 'crop[]' in data:
+            crop_coor = [float(coor) for coor in data['crop[]']]
+        else:
+            crop_coor = None
+
+        buffer = BytesIO()
+        cropped_image = crop_image(PIL_image, int(
+            data['tile_size[]'][0]), int(data['tile_size[]'][1]), crop_coor)
+
+        cropped_image.save(buffer, format="JPEG")
+        cropped_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        image_objects = [
+            {
+                "id": image_object.id,
+                "image_title": image_object.image_title,
+                "image_path": cropped_base64,
+                "relpath": image_object.image_path
+            }
+        ]
+
+    return image_objects
